@@ -42,6 +42,29 @@ data class FilmlistanUiState(
             ar = 2017,
             genre = "Action",
             bild = R.drawable.thorragnarrok
+        ),
+        Film(
+            id = 6,
+            titel = "Deadpool & Wolverine",
+            ar = 2024,
+            genre = "Action",
+            bild = R.drawable.deadpool_wolverine
+        ),
+        Film(
+            id = 7,
+            titel = "Black Panther",
+            ar = 2018,
+            genre = "Action",
+            bild = R.drawable.blackpanther
+        ),
+        Film(
+            id = 8,
+            titel = "Captain America: The Winter Soldier",
+            ar = 2014,
+            genre = "Action",
+            bild = R.drawable.captainamericathewintersoldier
+
+
         )
     )
 )
@@ -50,7 +73,7 @@ class FilmlistanViewModel : ViewModel() {
     var uiState by mutableStateOf(FilmlistanUiState())
         private set
 
-    private var nextId = 7
+    private var nextId = 10
     fun onNewTitleChange(text: String) {
         uiState = uiState.copy(nyTitel = text)
     }
