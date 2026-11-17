@@ -95,11 +95,32 @@ class FilmlistanViewModel : ViewModel() {
     }
     fun toggleSeen(id: Int) {
         uiState = uiState.copy(
-            filmer = uiState.filmer.map {
-                if (it.id == id) it.copy(sedd = !it.sedd) else it
+            filmer = uiState.filmer.map { film ->
+                if (film.id == id) {
+                    val nyStatus = !film.sedd
+                    film.copy(
+                        sedd = nyStatus,
+                        betyg = if (nyStatus) film.betyg else 0
+                    )
+                } else {
+                    film
+                }
             }
         )
     }
+    fun setRating(id: Int, nyttBetyg: Int) {
+        uiState = uiState.copy(
+            filmer = uiState.filmer.map { film ->
+                if (film.id == id) {
+                    val uppdateratBetyg = if (film.betyg == nyttBetyg) 0 else nyttBetyg
+                    film.copy(betyg = uppdateratBetyg)
+                } else {
+                    film
+                }
+            }
+        )
+    }
+
     fun removeFilm(id: Int) {
         uiState = uiState.copy(
             filmer = uiState.filmer.filter { it.id != id }

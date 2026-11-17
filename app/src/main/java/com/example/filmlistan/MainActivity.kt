@@ -37,7 +37,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.foundation.Image
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 
 
 class MainActivity : ComponentActivity() {
@@ -75,6 +78,7 @@ data class Film(
     val genre: String,
     val sedd: Boolean = false,
     val bild: Int? = null,
+    val betyg: Int = 0
 )
 
 @Composable
@@ -115,6 +119,7 @@ fun FilmKort(
     film: Film,
     onToggle: () -> Unit,
     onRemove: () -> Unit,
+    onRate: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Card(
@@ -143,8 +148,29 @@ fun FilmKort(
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.LightGray
                 )
+
+                if (film.sedd) {
+                    Row(modifier = Modifier.padding(top = 6.dp)) {
+                        for (stjarna in 1..5) {
+                            val arVald = stjarna <= film.betyg
+                            IconButton(
+                                onClick = { onRate(stjarna) },
+                                modifier = Modifier.size(28.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.Star,
+                                    contentDescription = "Ge betyg $stjarna av 5",
+                                    tint = if (arVald) Color(0xFFFFD700) else Color.DarkGray,
+                                    modifier = Modifier.size(22.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+
                 TextButton(
                     onClick = onRemove,
+                    contentPadding = PaddingValues(0.dp),
                     colors = androidx.compose.material3.ButtonDefaults.textButtonColors(
                         contentColor = Color.Red
                     )
@@ -170,7 +196,9 @@ fun FilmKort(
 fun FilmlistanScreen(viewModel: FilmlistanViewModel = viewModel()) {
     val state = viewModel.uiState
     val attSe = state.filmer.filter { !it.sedd }
-    val sedda = state.filmer.filter { it.sedd }
+    val sedda = state.filmer
+        .filter { it.sedd }
+        .sortedByDescending { it.betyg }
     Scaffold(
         containerColor = Color.Black,
         topBar = {
@@ -234,6 +262,7 @@ fun FilmlistanScreen(viewModel: FilmlistanViewModel = viewModel()) {
                         film = film,
                         onToggle = { viewModel.toggleSeen(film.id) },
                         onRemove = { viewModel.removeFilm(film.id) },
+                        onRate = { betyg -> viewModel.setRating(film.id, betyg) }
                     )
                 }
                 item {
@@ -248,6 +277,7 @@ fun FilmlistanScreen(viewModel: FilmlistanViewModel = viewModel()) {
                         film = film,
                         onToggle = { viewModel.toggleSeen(film.id) },
                         onRemove = { viewModel.removeFilm(film.id) },
+                        onRate = { betyg -> viewModel.setRating(film.id, betyg) }
                     )
                 }
             }
